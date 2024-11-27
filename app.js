@@ -25,47 +25,72 @@ const createAndSavePerson = async () => {
         console.error("Error saving person:", err);
       }
   };
-  const createManyPeople = (arrayOfPeople, done) => {   // Utilisation de la méthode Model.create() pour insérer plusieurs documents.
-    persone.create(arrayOfPeople, (err, people) => {
-      if (err) return console.error(err);
-      done(null, people);
-    });
-  };
-
-  const findPeopleByName = (personName, done) => {
-    persone.find({ fullName: personName }, (err, people) => {
-      if (err) return console.error(err);
-      done(null, people);
-    });
-  };
+  const createManyPersons = async () => {
+    const arrayOfPeople = [
+      { fullName: "Zeineb Saadouli", age: 30, favoriteFoods: ["Sushi", "Salad"] },
+      {
+        fullName: "saleh kr",
+        age: 21,
+        favoriteFoods: ["Couscous", "Crepes"],
+      },
+      { fullName: "nesrine tb", age: 21, favoriteFoods: ["Steak", "Pasta"] },
+    ];
   
-  const findOneByFood = (food, done) => {
-    persone.findOne({ favoriteFoods: food }, (err, person) => {
-      if (err) return console.error(err);
-      done(null, person);
-    });
-  };
-  const FindByID = (id , done) => {
-    persone.findById( id , (err, person ) => {
-        if (err) return console.error(err);
-        done(null, person)
-
-    })
+    try {
+      const persons = await persone.create(arrayOfPeople);
+      console.log("Multiple people created:", persons);
+    } catch (err) {
+      console.error("Error saving mutiple persons:", err);
+    }
   };
 
-
-  const findEditThenSave = (personId, done) => {
-    persone.findById(personId, (err, person) => {
-      if (err) return console.error(err);
-  
-      persone.favoriteFoods.push('hamburger');
-      persone.save((err, updatedPerson) => {
-        if (err) return console.error(err);
-        done(null, updatedPerson);
-      });
-    });
+  const findPersonsByName = async (name) => {
+    try {
+      const person = await persone.find({ fullName: name });
+      console.log("Person found:", persone);
+    } catch (err) {
+      console.error("Error Person not found:", err);
+    }
   };
 
+// Recherche une personne ayant un aliment spécifique dans ses plats préférés
+const findOneByFood = async (food) => {
+  try {
+    // Utilisation de findOne pour trouver une correspondance unique
+    const person = await persone.findOne({ favoriteFoods: food });
+    return persone; // Retourne la personne trouvée
+  } catch (err) {
+    console.error("Erreur lors de la recherche :", err);
+    throw err; // Propagation de l'erreur à l'appelant
+  }
+};
+
+
+
+// Recherche une personne par son ID
+const findById = async (personId) => {
+  try {
+    // Utilise findById pour rechercher une correspondance unique
+    const person = await persone.findById(personId);
+    return person; // Retourne la personne trouvée
+  } catch (err) {
+    console.error("Erreur lors de la recherche par ID :", err);
+    throw err; // Propage l'erreur à l'appelant
+  }
+};
+
+
+
+const findEditThenSave = async (personId) => {
+  try {
+    const person = await persone.findById(personId);
+    person.favoriteFoods.push('Hamburger');
+    const updatedPerson = await person.save();
+    console.log('Person updated:', updatedPerson);
+  } catch (err) {
+    console.error('Error updating person:', err);
+  }
+};
   
   const findAndUpdate = (personName, done) => {
     persone.findOneAndUpdate(
@@ -106,6 +131,9 @@ const createAndSavePerson = async () => {
       });
   };
   
-  createAndSavePerson();
-  
-  
+  // createAndSavePerson();
+  // createManyPersons();
+  // findPersonsByName('nesrine tb');
+  findOneByFood(`Steak`);
+  // findById('673ddd50c841e8798487800f');
+  // findEditThenSave('674745500dd7eea6530a8ef3');
